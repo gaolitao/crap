@@ -1,22 +1,19 @@
 #!/usr/bin/env python
 
-# $Id: 20130606$
-# $Date: 2013-06-06 21:37:01$
-# $Author: Marek Lukaszuk$
-
-from time import strftime,tzset
+#from time import strftime,tzset
 from os import environ, statvfs
 from os.path import exists as fs_exists, ismount
+import time
 
-tzlist = ["America/Los_Angeles","America/New_York","GMT","Asia/Kolkata","Asia/Tokyo","Pacific/Auckland"]
-mntlist = ["/","/home"]
+#tzlist = ["America/Los_Angeles","America/New_York","GMT","Asia/Kolkata","Asia/Tokyo","Pacific/Auckland"]
+mntlist = ["/","/home","/boot"]
 
 txt = ""
 
 ## timezone information
-for tz in tzlist:
-  environ['TZ'] = tz
-  txt+=strftime("%H%M")+strftime("%Z")[0]+" "
+#for tz in tzlist:
+#  environ['TZ'] = tz
+#  txt+=strftime("%H%M")+strftime("%Z")[0]+" "
 
 ## disk usage
 for path in mntlist:
@@ -76,8 +73,10 @@ if fs_exists("/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0A:00/power_supply/BAT0"
 ## data usage
 if fs_exists("/var/local/datausage.dat"):
   try:
-    txt+=str(int(float(open("/var/local/datausage.dat","r").readline().split()[2])/1024/500*100))+"%"
+    txt += str(int(float(open("/var/local/datausage.dat","r").readline().split()[7])/1024/500*100))+"%"
   except:
-    txt+="?%"
+    txt += "?%"
 
+  ts = time.localtime()
+  txt += "/%s%%" % (int((ts.tm_mday/31.0)*100))
 print txt
